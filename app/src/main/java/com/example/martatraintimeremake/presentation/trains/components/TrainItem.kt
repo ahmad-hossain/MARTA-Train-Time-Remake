@@ -3,10 +3,8 @@ package com.example.martatraintimeremake.presentation.trains.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
+import androidx.compose.material.Card
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Explore
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,57 +14,72 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.martatraintimeremake.domain.model.Train
+import com.example.martatraintimeremake.ui.theme.*
 
 @Composable
 fun TrainItem(
     train: Train,
     modifier: Modifier = Modifier
 ) {
-    val color: Color = when(train.LINE) {
-        "GOLD" -> Color.Yellow
-        "RED" -> Color.Red
-        "GREEN" -> Color.Green
-        "BLUE" -> Color.Blue
-        else -> Color.White
-    }
-    Row(
+    Card(
         modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(6.dp))
-            .background(color)
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(6.dp),
+        elevation = 10.dp
     ) {
-        Column {
-            Text(text = train.DESTINATION, fontWeight = FontWeight.Bold)
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.size(12.dp),
-                    imageVector = Icons.Default.Explore,
-                    contentDescription = "Compass Direction"
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Text(text = train.DIRECTION)
-            }
-        }
-        //if time in format '2 min', else it is 'Arriving'
-        if (train.WAITING_TIME.split(" ").size > 1) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = train.WAITING_TIME.split(" ")[0],
-                    fontWeight = FontWeight.Bold,
-                )
-                Text(text = "min")
+        Row(
+            modifier = Modifier
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                //color box with cardinal direction inside
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(
+                            color = when (train.LINE) {
+                                "GOLD" -> Amber600
+                                "RED" -> Red600
+                                "GREEN" -> Green500
+                                "BLUE" -> Blue500
+                                else -> Color.White
+                            }
+                        )
+                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                ) {
+                    Text(
+                        text = train.DIRECTION,
+                        color = Color.Black
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                //station name
+                Text(text = train.STATION, fontWeight = FontWeight.Bold)
             }
 
-        } else {
-            Text(text = train.WAITING_TIME)
+            //if time in format '2 min' display on two lines,
+            // else it is 'Arriving' so display on one line
+            if (train.WAITING_TIME.split(" ").size > 1) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val (waitTime, timeUnit) = train.WAITING_TIME.split(" ")
+                    Text(
+                        text = waitTime,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Text(text = timeUnit)
+                }
+
+            } else {
+                Text(
+                    text = train.WAITING_TIME,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }

@@ -3,11 +3,11 @@ package com.example.martatraintimeremake.presentation.trains
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -73,16 +73,16 @@ fun TrainsScreen(
     }
 }
 
-
 @Composable
 fun TrainList(viewModel: TrainViewModel) {
     val trainListState = viewModel.trainScreenState.value
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+        contentPadding = PaddingValues(vertical = 6.dp)
     ) {
-        items(trainListState.trains.size) {
-            TrainItem(trainListState.trains[it])
+        items(trainListState.trains) { train ->
+            TrainItem(train)
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.example.martatraintimeremake.presentation
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -8,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.martatraintimeremake.domain.model.Train
 import com.example.martatraintimeremake.domain.use_case.GetTrains
 import com.example.martatraintimeremake.domain.util.OrderType
-import com.example.martatraintimeremake.domain.util.SortingHelper
 import com.example.martatraintimeremake.domain.util.SortingHelper.appropriateSortingValue
 import com.example.martatraintimeremake.domain.util.TrainOrder
 import com.example.martatraintimeremake.presentation.trains.TrainsEvent
@@ -63,7 +61,6 @@ class TrainViewModel @Inject constructor(
                 )
             )
         }
-        Log.d(TAG, "Got ${trainScreenState.value.trains.size} trains")
     }
 
     private fun orderTrains(
