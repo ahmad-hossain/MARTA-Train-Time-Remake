@@ -33,7 +33,10 @@ fun TrainItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 //color box with cardinal direction inside
                 Box(
                     modifier = Modifier
@@ -94,7 +97,7 @@ fun TrainItemPreview() {
             EVENT_TIME = "2/11/2022 10:45:40 PM",
             LINE = "GOLD",
             NEXT_ARR = "10:46:02 PM",
-            STATION = "EAST POINT STATION",
+            STATION = "EDGEWOOD CANDLER PARK STATION TESTING ab",
             TRAIN_ID = "301506",
             WAITING_SECONDS = "18",
             WAITING_TIME = "10 min"
