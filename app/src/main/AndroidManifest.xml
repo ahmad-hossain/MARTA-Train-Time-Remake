@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.martatraintimeremake">
+    package="com.github.godspeed010.martatraintime">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:usesCleartextTraffic="true"
-        android:name=".MyApp"
+        android:name="com.github.godspeed010.martatraintime.MyApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MARTATrainTimeRemake">
         <activity
-            android:name=".MainActivity"
+            android:name="com.github.godspeed010.martatraintime.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MARTATrainTimeRemake.NoActionBar">
