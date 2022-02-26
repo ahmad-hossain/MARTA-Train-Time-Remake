@@ -4,6 +4,8 @@ import com.github.godspeed010.martatraintime.feature_train.data.remote.TrainApi
 import com.github.godspeed010.martatraintime.feature_train.data.repository.TrainRepositoryImpl
 import com.github.godspeed010.martatraintime.feature_train.domain.repository.TrainRepository
 import com.github.godspeed010.martatraintime.feature_train.domain.use_case.GetTrains
+import com.github.godspeed010.martatraintime.feature_train.domain.use_case.OrderTrains
+import com.github.godspeed010.martatraintime.feature_train.domain.use_case.TrainsUseCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,8 +20,11 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideGetTrainsUseCase(repository: TrainRepository): GetTrains {
-        return GetTrains(repository)
+    fun provideTrainsUseCases(repository: TrainRepository): TrainsUseCases {
+        return TrainsUseCases(
+            GetTrains(repository),
+            OrderTrains()
+        )
     }
 
     @Singleton
