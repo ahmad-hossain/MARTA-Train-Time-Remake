@@ -14,7 +14,6 @@ class TrainRepositoryImpl(
 ) : TrainRepository {
 
     override suspend fun getTrains(): List<Train> {
-        //todo handle IOException and HttpException
         try {
             return api.getTrains()
         } catch (e: IOException) {
