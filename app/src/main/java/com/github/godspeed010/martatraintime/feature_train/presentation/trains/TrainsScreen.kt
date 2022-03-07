@@ -96,6 +96,7 @@ fun TrainsScreen(
 @Composable
 fun TrainList(displayedTrainList: List<Train>) {
     LazyColumn(
+        modifier = Modifier.fillMaxHeight(),
         verticalArrangement = Arrangement.spacedBy(6.dp),
         contentPadding = PaddingValues(vertical = 6.dp)
     ) {
