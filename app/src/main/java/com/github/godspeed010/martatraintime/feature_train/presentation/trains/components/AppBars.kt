@@ -9,9 +9,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -60,12 +65,19 @@ fun DefaultAppBar(onSearchClicked: () -> Unit) {
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchAppBar(
     text: String,
     onTextChange: (String) -> Unit,
     onCloseClicked: () -> Unit
 ) {
+    val focusRequester = FocusRequester()
+    LaunchedEffect(true) {
+        focusRequester.requestFocus()
+    }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,8 +85,10 @@ fun SearchAppBar(
         elevation = AppBarDefaults.TopAppBarElevation,
         color = MaterialTheme.colors.primarySurface
     ) {
-        TextField(modifier = Modifier
-            .fillMaxWidth(),
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester),
             value = text,
             onValueChange = {
                 onTextChange(it)
@@ -119,7 +133,7 @@ fun SearchAppBar(
                 imeAction = ImeAction.Search
             ),
             keyboardActions = KeyboardActions(
-                onSearch = {}
+                onSearch = { keyboardController?.hide() }
             ),
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.Transparent,
