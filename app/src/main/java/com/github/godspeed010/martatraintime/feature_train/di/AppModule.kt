@@ -5,6 +5,7 @@ import com.github.godspeed010.martatraintime.feature_train.data.repository.Train
 import com.github.godspeed010.martatraintime.feature_train.domain.repository.TrainRepository
 import com.github.godspeed010.martatraintime.feature_train.domain.use_case.GetTrains
 import com.github.godspeed010.martatraintime.feature_train.domain.use_case.OrderTrains
+import com.github.godspeed010.martatraintime.feature_train.domain.use_case.SearchTrains
 import com.github.godspeed010.martatraintime.feature_train.domain.use_case.TrainsUseCases
 import dagger.Module
 import dagger.Provides
@@ -23,7 +24,8 @@ object AppModule {
     fun provideTrainsUseCases(repository: TrainRepository): TrainsUseCases {
         return TrainsUseCases(
             GetTrains(repository),
-            OrderTrains()
+            OrderTrains(),
+            SearchTrains()
         )
     }
 

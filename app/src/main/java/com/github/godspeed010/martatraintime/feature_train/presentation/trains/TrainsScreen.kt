@@ -1,5 +1,6 @@
 package com.github.godspeed010.martatraintime.feature_train.presentation.trains
 
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,10 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.godspeed010.martatraintime.feature_train.domain.model.Train
 import com.github.godspeed010.martatraintime.feature_train.presentation.TrainViewModel
+import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.MainAppBar
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.OrderSection
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.TrainItem
 
+private val TAG = "TrainsScreen"
 @ExperimentalAnimationApi
 @Composable
 fun TrainsScreen(
@@ -25,7 +29,23 @@ fun TrainsScreen(
     val scaffoldState = rememberScaffoldState()
 
     Scaffold(
-        scaffoldState = scaffoldState
+        scaffoldState = scaffoldState,
+        topBar = {
+            MainAppBar(
+                isSearchSectionVisible = state.isSearchSectionVisible,
+                searchTextState = state.searchQuery,
+                onTextChange = {
+                    Log.i(TAG, "Search Query: $it")
+                    viewModel.onEvent(TrainsEvent.Search(it))
+                },
+                onCloseClicked = {
+                    Log.i(TAG, "Search CLOSED")
+                    viewModel.onEvent(TrainsEvent.ToggleSearchSection) },
+                onSearchTriggered = {
+                    Log.i(TAG, "Search OPENED")
+                    viewModel.onEvent(TrainsEvent.ToggleSearchSection) }
+            )
+        }
     ) {
         Column(
             modifier = Modifier
@@ -68,20 +88,18 @@ fun TrainsScreen(
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            TrainList(viewModel)
+            TrainList(state.displayedTrainList)
         }
     }
 }
 
 @Composable
-fun TrainList(viewModel: TrainViewModel) {
-    val trainListState = viewModel.trainScreenState.value
-
+fun TrainList(displayedTrainList: List<Train>) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(6.dp),
         contentPadding = PaddingValues(vertical = 6.dp)
     ) {
-        items(trainListState.trains) { train ->
+        items(displayedTrainList) { train ->
             TrainItem(train)
         }
     }
