@@ -5,4 +5,4 @@ Android App that tells the waiting time for the user's desired train. Recreated 
 [Play Store](https://play.google.com/store/apps/details?id=com.github.godspeed010.martatraintime)
 
 # Video Walkthrough
-![gif](https://thumbs.gfycat.com/HorribleCrazyFattaileddunnart-size_restricted.gif)
+![gif](https://thumbs.gfycat.com/FittingUntriedArawana-size_restricted.gif)
