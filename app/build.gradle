@@ -4,6 +4,7 @@ plugins {
 
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
+    id 'com.google.protobuf'
 }
 
 def versionMajor = 1
@@ -52,6 +53,19 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    sourceSets {
+        main {
+            java {
+                srcDirs += 'build/generated/source/proto/main/java'
+            }
+            kotlin {
+                srcDirs += 'build/generated/source/proto/main/kotlin'
+            }
+            proto {
+                srcDir 'src/main/proto' // default value
+            }
+        }
+    }
 }
 
 dependencies {
@@ -91,4 +105,37 @@ dependencies {
 //    // Coroutine Lifecycle Scopes
 //    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
 //    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
+
+    implementation 'com.google.protobuf:protobuf-javalite:3.20.1'
+    implementation 'com.google.protobuf:protobuf-kotlin-lite:3.20.1'
+}
+
+protobuf {
+    protoc {
+        // You still need protoc like in the non-Android case
+        artifact = 'com.google.protobuf:protoc:3.20.1:osx-x86_64'
+    }
+    plugins {
+        javalite {
+            // The codegen for lite comes as a separate artifact
+            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0:osx-x86_64'
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option "lite"
+                }
+            }
+//            task.builtins {
+//                // In most cases you don't need the full Java output
+//                // if you use the lite output.
+//                remove java
+//            }
+//            task.plugins {
+//                javalite { }
+//            }
+        }
+    }
 }
