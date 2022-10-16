@@ -1,5 +1,6 @@
 package com.github.godspeed010.martatraintime.feature_train.presentation
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -84,16 +85,27 @@ class TrainViewModel @Inject constructor(
 
     private fun getAllTrains() {
         viewModelScope.launch {
-            _trainScreenState.value = trainScreenState.value.copy(
-                trains = trainsUseCases.orderTrains(
-                    trains = trainsUseCases.getTrains(),
-                    trainOrder = TrainOrder.Line(OrderType.Descending)
-                )
-            )
-            //set the displayed list to be the parsed Train list
-            _trainScreenState.value = trainScreenState.value.copy(
-                displayedTrainList = trainScreenState.value.trains
+            val feedMessage = trainsUseCases.getTrains()
+            val firstEntity = feedMessage.entityList[0]
+            Log.d(TAG, "FirstEntity:\n" +
+                    "ID=${firstEntity.id}\n" +
+                    "Alert=${firstEntity.alert}\n" +
+                    "Vehicle_Label=${firstEntity.vehicle.vehicle.label}\n" +
+                    "Trip_Id=${firstEntity.vehicle.trip.tripId}\n" +
+                    "Route_id=${firstEntity.vehicle.trip.routeId}\n"
             )
         }
+//        viewModelScope.launch {
+//            _trainScreenState.value = trainScreenState.value.copy(
+//                trains = trainsUseCases.orderTrains(
+//                    trains = trainsUseCases.getTrains(),
+//                    trainOrder = TrainOrder.Line(OrderType.Descending)
+//                )
+//            )
+//            //set the displayed list to be the parsed Train list
+//            _trainScreenState.value = trainScreenState.value.copy(
+//                displayedTrainList = trainScreenState.value.trains
+//            )
+//        }
     }
 }

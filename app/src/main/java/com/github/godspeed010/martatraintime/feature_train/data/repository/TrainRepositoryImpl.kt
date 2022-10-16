@@ -4,6 +4,7 @@ import android.util.Log
 import com.github.godspeed010.martatraintime.feature_train.data.remote.TrainApi
 import com.github.godspeed010.martatraintime.feature_train.domain.model.Train
 import com.github.godspeed010.martatraintime.feature_train.domain.repository.TrainRepository
+import com.google.transit.realtime.GtfsRealtime
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -22,5 +23,10 @@ class TrainRepositoryImpl(
             Log.e(TAG, "HttpException ${e.code()}")
         }
         return emptyList()
+    }
+
+    override suspend fun getGtfs(): GtfsRealtime.FeedMessage {
+        val byteStream = api.getGtfs().byteStream()
+        return GtfsRealtime.FeedMessage.parseFrom(byteStream)
     }
 }
