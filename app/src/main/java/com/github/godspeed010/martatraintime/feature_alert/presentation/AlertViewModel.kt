@@ -21,7 +21,10 @@ class AlertViewModel @Inject constructor(): ViewModel() {
             is AlertEvent.LatitudeEntered -> {
                 TODO()
             }
-            is AlertEvent.LongitudeEntered -> TODO()
+            is AlertEvent.LongitudeEntered -> {
+                // if not valid coord, disable button
+                // else, enable btn if needed. update coord
+            }
         }
     }
 }

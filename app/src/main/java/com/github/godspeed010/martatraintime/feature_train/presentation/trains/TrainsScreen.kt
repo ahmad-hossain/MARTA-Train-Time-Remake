@@ -14,16 +14,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.godspeed010.martatraintime.common.components.CustomBottomAppBar
+import com.github.godspeed010.martatraintime.common.model.Screen
+import com.github.godspeed010.martatraintime.destinations.AlertScreenDestination
 import com.github.godspeed010.martatraintime.feature_train.domain.model.Train
 import com.github.godspeed010.martatraintime.feature_train.presentation.TrainViewModel
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.MainAppBar
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.OrderSection
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.TrainItem
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 private const val TAG = "TrainsScreen"
+
+@Destination(start = true)
 @ExperimentalAnimationApi
 @Composable
 fun TrainsScreen(
+    navigator: DestinationsNavigator,
     viewModel: TrainViewModel = hiltViewModel()
 ) {
     val state = viewModel.trainScreenState.value
@@ -45,6 +53,12 @@ fun TrainsScreen(
                 onSearchTriggered = {
                     Log.i(TAG, "Search OPENED")
                     viewModel.onEvent(TrainsEvent.ToggleSearchSection) }
+            )
+        }, bottomBar = {
+            CustomBottomAppBar(
+                modifier = Modifier,
+                currentScreen = Screen.TRAINS,
+                onClickAlert = { navigator.navigate(AlertScreenDestination) }
             )
         }
     ) { pv ->

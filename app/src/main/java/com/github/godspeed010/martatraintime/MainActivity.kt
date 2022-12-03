@@ -7,6 +7,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.TrainsScreen
 import com.github.godspeed010.martatraintime.feature_train.ui.theme.MARTATrainTimeRemakeTheme
+import com.ramcosta.composedestinations.DestinationsNavHost
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -17,14 +18,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MARTATrainTimeRemakeTheme {
-                App()
+                DestinationsNavHost(navGraph = NavGraphs.root)
             }
         }
     }
-}
-
-@ExperimentalAnimationApi
-@Composable
-fun App() {
-    TrainsScreen()
 }
