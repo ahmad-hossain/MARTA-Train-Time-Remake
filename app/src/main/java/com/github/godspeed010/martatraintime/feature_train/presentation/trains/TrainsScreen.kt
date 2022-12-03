@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.godspeed010.martatraintime.feature_train.domain.model.Train
@@ -19,7 +20,7 @@ import com.github.godspeed010.martatraintime.feature_train.presentation.trains.c
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.OrderSection
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.TrainItem
 
-private val TAG = "TrainsScreen"
+private const val TAG = "TrainsScreen"
 @ExperimentalAnimationApi
 @Composable
 fun TrainsScreen(
@@ -46,11 +47,16 @@ fun TrainsScreen(
                     viewModel.onEvent(TrainsEvent.ToggleSearchSection) }
             )
         }
-    ) {
+    ) { pv ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                .padding(
+                    start = 16.dp + pv.calculateStartPadding(LayoutDirection.Ltr),
+                    end = 16.dp + pv.calculateEndPadding(LayoutDirection.Ltr),
+                    top = 16.dp + pv.calculateTopPadding(),
+                    bottom = pv.calculateBottomPadding()
+                )
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -80,14 +86,13 @@ fun TrainsScreen(
                 OrderSection(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 16.dp),
+                        .padding(vertical = 8.dp),
                     trainOrder = state.trainOrder,
                     onOrderChange = {
                         viewModel.onEvent(TrainsEvent.Order(it))
                     }
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
             TrainList(state.displayedTrainList)
         }
     }

@@ -1,11 +1,13 @@
 package com.github.godspeed010.martatraintime.feature_train.presentation.trains.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.github.godspeed010.martatraintime.feature_train.domain.util.OrderType
 import com.github.godspeed010.martatraintime.feature_train.domain.util.TrainOrder
+import com.google.accompanist.flowlayout.FlowRow
 
 @Composable
 fun OrderSection(
@@ -16,7 +18,7 @@ fun OrderSection(
     Column(
         modifier = modifier
     ) {
-        Row(
+        FlowRow(
             modifier = Modifier.fillMaxWidth()
         ) {
             DefaultRadioButton(
@@ -43,7 +45,7 @@ fun OrderSection(
                 onSelect = { onOrderChange(TrainOrder.WaitTime(trainOrder.orderType)) }
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Divider(modifier = Modifier.padding(vertical = 6.dp), thickness = 3.dp)
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {

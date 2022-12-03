@@ -4,6 +4,7 @@ plugins {
 
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
+    id 'com.google.devtools.ksp' version '1.7.0-1.0.6' // Depends on your kotlin version
 }
 
 def versionMajor = 1
@@ -11,7 +12,7 @@ def versionMinor = 1
 def versionPatch = 0
 
 android {
-    compileSdk 31
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.github.godspeed010.martatraintime"
@@ -38,18 +39,25 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
-        useIR = true
+//        useIR = true
     }
     buildFeatures {
         compose true
     }
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
-        kotlinCompilerVersion '1.5.21'
+        kotlinCompilerVersion '1.7.0'
     }
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+    applicationVariants.all { variant ->
+        kotlin.sourceSets {
+            getByName(variant.name) {
+                kotlin.srcDir("build/generated/ksp/${variant.name}/kotlin")
+            }
         }
     }
 }
@@ -79,16 +87,25 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:4.9.0"
 
     // Dagger/Hilt
-    implementation "com.google.dagger:hilt-android:2.38.1"
-    kapt "com.google.dagger:hilt-android-compiler:2.38.1" //revert to 2.37 if error
-    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
+    implementation "com.google.dagger:hilt-android:2.44.2"
+    kapt "com.google.dagger:hilt-android-compiler:2.44.2" //revert to 2.37 if error
     kapt "androidx.hilt:hilt-compiler:1.0.0"
-    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-alpha03'
-//    // Coroutines
-//    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
-//    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
-//
-//    // Coroutine Lifecycle Scopes
-//    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
-//    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
+
+    // For FusedLocationProvider
+    implementation "com.google.android.gms:play-services-location:21.0.1"
+
+    // Ramcosta Destinations
+    implementation "io.github.raamcosta.compose-destinations:core:1.7.27-beta"
+    ksp "io.github.raamcosta.compose-destinations:ksp:1.7.27-beta"
+
+    // Accompanist Flow Layouts (Row & Column)
+    implementation "com.google.accompanist:accompanist-flowlayout:0.28.0"
+    //    // Coroutines
+    //    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
+    //    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+    //
+    //    // Coroutine Lifecycle Scopes
+    //    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
+    //    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
 }
