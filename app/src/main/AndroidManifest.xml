@@ -8,6 +8,7 @@
     <!-- Required only when requesting background location access on
       Android 10 (API level 29) and higher. -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:usesCleartextTraffic="true"
@@ -18,6 +19,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MARTATrainTimeRemake">
+        <service
+            android:name=".feature_alert.domain.monitor.LocationMonitor"
+            android:enabled="true" />
         <activity
             android:name="com.github.godspeed010.martatraintime.MainActivity"
             android:exported="true"

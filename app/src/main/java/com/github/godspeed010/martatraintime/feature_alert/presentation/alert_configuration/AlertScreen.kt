@@ -1,5 +1,6 @@
 package com.github.godspeed010.martatraintime.feature_alert.presentation.alert_configuration
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,18 +8,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.godspeed010.martatraintime.R
 import com.github.godspeed010.martatraintime.common.components.CustomBottomAppBar
 import com.github.godspeed010.martatraintime.common.model.Screen
 import com.github.godspeed010.martatraintime.feature_alert.presentation.AlertViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.github.godspeed010.martatraintime.R
 
+private const val TAG = "AlertScreen"
+
+@OptIn(ExperimentalPermissionsApi::class)
 @Destination
 @Composable
 fun AlertScreen(
@@ -26,6 +34,19 @@ fun AlertScreen(
 ) {
     val state = viewModel.alertScreenState.value
     val scaffoldState = rememberScaffoldState()
+    val permissionsState = rememberMultiplePermissionsState(
+            permissions = viewModel.requiredPermissions,
+            onPermissionsResult = {
+            if (it.containsValue(false)) {
+                Log.i(TAG, "A Permission was not granted")
+                navigator.popBackStack()
+            }
+        }
+    )
+
+    LaunchedEffect(Unit) {
+        permissionsState.launchMultiplePermissionRequest()
+    }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -62,7 +83,11 @@ fun AlertScreen(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             }
-            Button(onClick = { viewModel.onEvent(AlertEvent.StartClicked) }) {
+            val ctx = LocalContext.current
+            Button(
+                onClick = { viewModel.onEvent(AlertEvent.StartClicked(ctx)) },
+                enabled = state.isButtonEnabled,
+            ) {
                 Text("Start")
             }
         }
