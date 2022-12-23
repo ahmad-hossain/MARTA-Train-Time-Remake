@@ -1,9 +1,9 @@
 package com.github.godspeed010.martatraintime.feature_alert.presentation.alert_configuration
 
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -32,17 +32,16 @@ private const val TAG = "AlertScreen"
 fun AlertScreen(
     navigator: DestinationsNavigator, viewModel: AlertViewModel = hiltViewModel()
 ) {
-    val state = viewModel.alertScreenState.value
+    val state = viewModel.state
     val scaffoldState = rememberScaffoldState()
-    val permissionsState = rememberMultiplePermissionsState(
-            permissions = viewModel.requiredPermissions,
+    val permissionsState =
+        rememberMultiplePermissionsState(permissions = viewModel.requiredPermissions,
             onPermissionsResult = {
-            if (it.containsValue(false)) {
-                Log.i(TAG, "A Permission was not granted")
-                navigator.popBackStack()
-            }
-        }
-    )
+                if (it.containsValue(false)) {
+                    Log.i(TAG, "A Permission was not granted")
+                    navigator.popBackStack()
+                }
+            })
 
     LaunchedEffect(Unit) {
         permissionsState.launchMultiplePermissionRequest()
@@ -67,22 +66,22 @@ fun AlertScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Row {
-                TextField(
-                    value = state.latitude.toString(),
-                    onValueChange = { viewModel.onEvent(AlertEvent.LatitudeEntered(it)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-                TextField(
-                    value = state.longitude.toString(),
-                    onValueChange = { viewModel.onEvent(AlertEvent.LongitudeEntered(it)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-            }
+            OutlinedTextField(value = state.latitude.toString(),
+                label = { Text("Latitude") },
+                onValueChange = { viewModel.onEvent(AlertEvent.LatitudeEntered(it)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+            OutlinedTextField(value = state.longitude.toString(),
+                label = { Text("Longitude") },
+                onValueChange = { viewModel.onEvent(AlertEvent.LongitudeEntered(it)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+
             val ctx = LocalContext.current
             Button(
                 onClick = { viewModel.onEvent(AlertEvent.StartClicked(ctx)) },

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">MARTA Train Time</string>
+    <string name="stop">Stop</string>
+    <string name="service_notification_title">Arrival Alert is Running</string>
+    <string name="minutes_remaining">Minutes Remaining: %d</string>
+    <string name="speed">Speed (m/s): %f</string>
 </resources>

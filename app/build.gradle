@@ -5,6 +5,8 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'com.google.devtools.ksp' version '1.7.0-1.0.6' // Depends on your kotlin version
+
+    id 'kotlin-parcelize'
 }
 
 def versionMajor = 1
@@ -108,6 +110,6 @@ dependencies {
     //    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
     //
     //    // Coroutine Lifecycle Scopes
-    //    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
-    //    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
+//        implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
+//        implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
 }
