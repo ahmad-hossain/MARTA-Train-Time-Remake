@@ -1,4 +1,4 @@
-package com.github.godspeed010.martatraintime.feature_alert.domain.monitor
+package com.github.godspeed010.martatraintime.feature_alert.domain.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -15,6 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.github.godspeed010.martatraintime.R
 import com.github.godspeed010.martatraintime.feature_alert.domain.model.NotificationState
 import com.github.godspeed010.martatraintime.feature_alert.domain.model.RunningAverage
+import com.github.godspeed010.martatraintime.feature_alert.domain.monitor.LocationMonitor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

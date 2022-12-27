@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MARTATrainTimeRemake">
         <service
-            android:name=".feature_alert.domain.monitor.LocationMonitorService"
+            android:name=".feature_alert.domain.service.LocationMonitorService"
             android:enabled="true" />
         <activity
             android:name="com.github.godspeed010.martatraintime.MainActivity"

@@ -9,7 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.github.godspeed010.martatraintime.feature_alert.domain.monitor.LocationMonitorService
+import com.github.godspeed010.martatraintime.feature_alert.domain.service.LocationMonitorService
 import com.github.godspeed010.martatraintime.feature_alert.presentation.alert_configuration.AlertEvent
 import com.github.godspeed010.martatraintime.feature_alert.presentation.alert_configuration.AlertState
 import dagger.hilt.android.lifecycle.HiltViewModel
