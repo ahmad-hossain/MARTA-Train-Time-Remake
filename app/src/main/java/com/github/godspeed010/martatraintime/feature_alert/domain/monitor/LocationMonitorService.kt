@@ -1,6 +1,5 @@
 package com.github.godspeed010.martatraintime.feature_alert.domain.monitor
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -16,30 +15,25 @@ import androidx.core.app.NotificationManagerCompat
 import com.github.godspeed010.martatraintime.R
 import com.github.godspeed010.martatraintime.feature_alert.domain.model.NotificationState
 import com.github.godspeed010.martatraintime.feature_alert.domain.model.RunningAverage
-import com.google.android.gms.location.*
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.concurrent.Executor
-import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
+@AndroidEntryPoint
 class LocationMonitorService : Service() {
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
 
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private val locationRequest =
-        LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, LOCATION_MAX_UPDATE_INTERVAL_MS)
-            .apply {
-                setMinUpdateIntervalMillis(LOCATION_MIN_UPDATE_INTERVAL_MS)
-                setIntervalMillis(LOCATION_MAX_UPDATE_INTERVAL_MS)
-                setMinUpdateDistanceMeters(LOCATION_MIN_UPDATE_DISTANCE_M)
-            }.build()
-    private val locationListener =
-        LocationListener { location -> updateNotificationState(location) }
+    @Inject
+    lateinit var locationMonitor: LocationMonitor
 
     private val mutableNotificationStateFlow = MutableStateFlow(NotificationState())
     private val notificationState: StateFlow<NotificationState>
@@ -78,9 +72,16 @@ class LocationMonitorService : Service() {
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, notificationBuilder.build())
 
-        startLocationMonitoring()
+        locationMonitor.start()
 
-        scope.launch { notificationState.collectLatest(::updateNotification) }
+        scope.launch {
+            launch {
+                locationMonitor.locationFlow.collectLatest(::updateNotificationState)
+            }
+            launch {
+                notificationState.collectLatest(::updateNotification)
+            }
+        }
     }
 
     private fun createNotificationChannel() {
@@ -97,14 +98,20 @@ class LocationMonitorService : Service() {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun startLocationMonitoring() {
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        fusedLocationProviderClient.requestLocationUpdates(
-            locationRequest,
-            Executor { it.run() },
-            locationListener,
+    private fun updateNotificationState(location: Location) {
+        Log.i(TAG, "updateState(): location=${location.latitude}, ${location.longitude}")
+
+        val runningAvg = notificationState.value.runningAverage
+        val newNotificationState = NotificationState(
+            runningAverage = RunningAverage(
+                runningTotal = runningAvg.runningTotal + location.speed,
+                dataPoints = runningAvg.dataPoints + 1
+            ), lastLocation = location
         )
+
+        scope.launch {
+            mutableNotificationStateFlow.emit(newNotificationState)
+        }
     }
 
     private fun updateNotification(notificationState: NotificationState) {
@@ -126,25 +133,10 @@ class LocationMonitorService : Service() {
         return remainingDistanceM / this.speed
     }
 
-    private fun updateNotificationState(location: Location) {
-        Log.i(TAG, "updateState(): location=${location.latitude}, ${location.longitude}")
-
-        val runningAvg = notificationState.value.runningAverage
-        val newNotificationState = NotificationState(
-            runningAverage = RunningAverage(
-                runningTotal = runningAvg.runningTotal + location.speed,
-                dataPoints = runningAvg.dataPoints + 1
-            ), lastLocation = location
-        )
-
-        scope.launch {
-            mutableNotificationStateFlow.emit(newNotificationState)
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         job.cancel()
+        locationMonitor.stop()
     }
 
     companion object {
@@ -156,8 +148,5 @@ class LocationMonitorService : Service() {
         const val ACTION_START_SERVICE = "ACTION_START_SERVICE"
         private const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
         const val EXTRA_DESTINATION_LOCATION = "EXTRA_DESTINATION_LOCATION"
-        private val LOCATION_MAX_UPDATE_INTERVAL_MS = TimeUnit.SECONDS.toMillis(10L)
-        private val LOCATION_MIN_UPDATE_INTERVAL_MS = TimeUnit.SECONDS.toMillis(6L)
-        private const val LOCATION_MIN_UPDATE_DISTANCE_M = 15f
     }
 }
