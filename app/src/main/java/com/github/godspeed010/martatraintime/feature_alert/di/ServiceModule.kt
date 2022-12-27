@@ -15,6 +15,4 @@ interface ServiceModule {
     @ServiceScoped
     @Binds
     fun provideLocationMonitor(locationMonitorImpl: LocationMonitorImpl): LocationMonitor
-
-
 }
