@@ -14,14 +14,16 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.github.godspeed010.martatraintime.R
+import com.github.godspeed010.martatraintime.feature_alert.domain.model.NotificationState
+import com.github.godspeed010.martatraintime.feature_alert.domain.model.RunningAverage
 import com.google.android.gms.location.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
+import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 class LocationMonitorService : Service() {
@@ -30,13 +32,18 @@ class LocationMonitorService : Service() {
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val locationRequest =
-        LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5 * 1000).apply {
-            setMinUpdateIntervalMillis(4 * 1000)
-            setIntervalMillis(5 * 1000)
-            setMinUpdateDistanceMeters(3f)
-        }.build()
-    private val locationListener = LocationListener { location -> updateLocation(location) }
-    private val mutableLocationFlow = MutableSharedFlow<Location>()
+        LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, LOCATION_MAX_UPDATE_INTERVAL_MS)
+            .apply {
+                setMinUpdateIntervalMillis(LOCATION_MIN_UPDATE_INTERVAL_MS)
+                setIntervalMillis(LOCATION_MAX_UPDATE_INTERVAL_MS)
+                setMinUpdateDistanceMeters(LOCATION_MIN_UPDATE_DISTANCE_M)
+            }.build()
+    private val locationListener =
+        LocationListener { location -> updateNotificationState(location) }
+
+    private val mutableNotificationStateFlow = MutableStateFlow(NotificationState())
+    private val notificationState: StateFlow<NotificationState>
+        get() = mutableNotificationStateFlow.asStateFlow()
 
     private val stopServiceIntent by lazy {
         Intent(this, LocationMonitorService::class.java).apply { action = ACTION_STOP_SERVICE }
@@ -73,34 +80,7 @@ class LocationMonitorService : Service() {
 
         startLocationMonitoring()
 
-        scope.launch {
-            mutableLocationFlow.collectLatest(::updateNotification)
-        }
-    }
-
-    private fun updateNotification(location: Location) {
-        Log.i(TAG, "updateNotification()")
-        val timeRemaining = location.timeTo(destination).roundToInt()
-        val inboxStyle = NotificationCompat.InboxStyle()
-            .addLine(getString(R.string.minutes_remaining, timeRemaining))
-            .addLine(getString(R.string.speed, location.speed))
-        NotificationManagerCompat.from(this@LocationMonitorService)
-            .notify(NOTIFICATION_ID, notificationBuilder.setStyle(inboxStyle).build())
-    }
-
-    private fun Location.timeTo(destination: Location): Float {
-        val remainingDistanceM = this.distanceTo(destination)
-        return remainingDistanceM / this.speed
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun startLocationMonitoring() {
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        fusedLocationProviderClient.requestLocationUpdates(
-            locationRequest,
-            Executor { it.run() },
-            locationListener,
-        )
+        scope.launch { notificationState.collectLatest(::updateNotification) }
     }
 
     private fun createNotificationChannel() {
@@ -117,9 +97,49 @@ class LocationMonitorService : Service() {
         }
     }
 
-    private fun updateLocation(location: Location) {
-        Log.i(TAG, "updateLocation(): location=${location.latitude}, ${location.longitude}")
-        scope.launch { mutableLocationFlow.emit(location) }
+    @SuppressLint("MissingPermission")
+    private fun startLocationMonitoring() {
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequest,
+            Executor { it.run() },
+            locationListener,
+        )
+    }
+
+    private fun updateNotification(notificationState: NotificationState) {
+        Log.i(TAG, "updateNotification()")
+
+        val timeRemaining = notificationState.lastLocation?.timeTo(destination)?.roundToInt()
+        val avgSpeed = notificationState.runningAverage.average
+
+        val inboxStyle = NotificationCompat.InboxStyle()
+            .addLine(getString(R.string.minutes_remaining, timeRemaining))
+            .addLine(getString(R.string.avg_speed, avgSpeed))
+
+        NotificationManagerCompat.from(this@LocationMonitorService)
+            .notify(NOTIFICATION_ID, notificationBuilder.setStyle(inboxStyle).build())
+    }
+
+    private fun Location.timeTo(destination: Location): Float {
+        val remainingDistanceM = this.distanceTo(destination)
+        return remainingDistanceM / this.speed
+    }
+
+    private fun updateNotificationState(location: Location) {
+        Log.i(TAG, "updateState(): location=${location.latitude}, ${location.longitude}")
+
+        val runningAvg = notificationState.value.runningAverage
+        val newNotificationState = NotificationState(
+            runningAverage = RunningAverage(
+                runningTotal = runningAvg.runningTotal + location.speed,
+                dataPoints = runningAvg.dataPoints + 1
+            ), lastLocation = location
+        )
+
+        scope.launch {
+            mutableNotificationStateFlow.emit(newNotificationState)
+        }
     }
 
     override fun onDestroy() {
@@ -136,5 +156,8 @@ class LocationMonitorService : Service() {
         const val ACTION_START_SERVICE = "ACTION_START_SERVICE"
         private const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
         const val EXTRA_DESTINATION_LOCATION = "EXTRA_DESTINATION_LOCATION"
+        private val LOCATION_MAX_UPDATE_INTERVAL_MS = TimeUnit.SECONDS.toMillis(10L)
+        private val LOCATION_MIN_UPDATE_INTERVAL_MS = TimeUnit.SECONDS.toMillis(6L)
+        private const val LOCATION_MIN_UPDATE_DISTANCE_M = 15f
     }
 }
