@@ -30,7 +30,6 @@ class AlertViewModel @Inject constructor() : ViewModel() {
         get() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 field.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                return field
             }
             return field
         }
