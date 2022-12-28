@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.github.godspeed010.martatraintime.feature_alert.domain.service.LocationMonitorService
+import com.github.godspeed010.martatraintime.feature_alert.domain.use_case.AlertUseCases
 import com.github.godspeed010.martatraintime.feature_alert.presentation.alert_configuration.AlertEvent
 import com.github.godspeed010.martatraintime.feature_alert.presentation.alert_configuration.AlertState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,9 @@ import javax.inject.Inject
 private const val TAG = "AlertViewModel"
 
 @HiltViewModel
-class AlertViewModel @Inject constructor() : ViewModel() {
+class AlertViewModel @Inject constructor(
+    private val alertUseCases: AlertUseCases,
+) : ViewModel() {
 
     var state by mutableStateOf(AlertState())
         private set
@@ -40,8 +43,8 @@ class AlertViewModel @Inject constructor() : ViewModel() {
                 Log.i(TAG, "StartClicked")
 
                 val destinationLocation = Location("destination").apply {
-                    latitude = state.latitude
-                    longitude = state.longitude
+                    latitude = state.latitudeNum
+                    longitude = state.longitudeNum
                 }
                 val intent = Intent(event.context, LocationMonitorService::class.java)
                 intent.apply {
@@ -54,12 +57,24 @@ class AlertViewModel @Inject constructor() : ViewModel() {
                 }
             }
             is AlertEvent.LatitudeEntered -> {
-                state = state.copy(latitude = event.latitude.toDouble())
+                val isTextValidLat = alertUseCases.validLatitude(event.latitude)
+                val newLatitudeNum = if (isTextValidLat) event.latitude.toDouble() else 0.0
+
+                state = state.copy(
+                    latitudeText = event.latitude,
+                    latitudeNum = newLatitudeNum,
+                    isButtonEnabled = true // TODO should only be enabled if both TextFields have no error
+                )
             }
             is AlertEvent.LongitudeEntered -> {
-                // TODO if not valid coord, disable button
-                // else, enable btn if needed. update coord
-                state = state.copy(longitude = event.longitude.toDouble())
+                val isTextValidLon = alertUseCases.validLongitude(event.longitude)
+                val newLongitudeNum = if (isTextValidLon) event.longitude.toDouble() else 0.0
+
+                state = state.copy(
+                    longitudeText = event.longitude,
+                    longitudeNum = newLongitudeNum,
+                    isButtonEnabled = true // TODO
+                )
             }
         }
     }

@@ -71,12 +71,12 @@ fun AlertScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            OutlinedTextField(value = state.latitude.toString(),
+            OutlinedTextField(value = state.latitudeText,
                 label = { Text("Latitude") },
                 onValueChange = { viewModel.onEvent(AlertEvent.LatitudeEntered(it)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
-            OutlinedTextField(value = state.longitude.toString(),
+            OutlinedTextField(value = state.longitudeText,
                 label = { Text("Longitude") },
                 onValueChange = { viewModel.onEvent(AlertEvent.LongitudeEntered(it)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
