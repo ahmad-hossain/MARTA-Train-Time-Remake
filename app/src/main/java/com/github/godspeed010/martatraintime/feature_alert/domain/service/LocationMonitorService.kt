@@ -44,8 +44,15 @@ class LocationMonitorService : Service() {
         Intent(this, LocationMonitorService::class.java).apply { action = ACTION_STOP_SERVICE }
     }
     private val stopServicePIntent by lazy {
-        PendingIntent.getService(this, 0, stopServiceIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
+
+        PendingIntent.getService(this, 0, stopServiceIntent, flags)
     }
+
     private val notificationBuilder by lazy {
         NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID).setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(getString(R.string.service_notification_title))
