@@ -1,5 +1,7 @@
 package com.github.godspeed010.martatraintime.feature_train.domain.model
 
+import com.google.gson.annotations.SerializedName
+
 /*
   EXAMPLE:
   "DESTINATION": "Airport",
@@ -13,13 +15,22 @@ package com.github.godspeed010.martatraintime.feature_train.domain.model
   "WAITING_TIME": "Arriving"
  */
 data class Train(
+    @SerializedName("DESTINATION")
     val destination: String,
+    @SerializedName("DIRECTION")
     val direction: String,
+    @SerializedName("EVENT_TIME")
     val eventTime: String,
+    @SerializedName("LINE")
     val line: String,
+    @SerializedName("NEXT_ARR")
     val nextArr: String,
+    @SerializedName("STATION")
     val station: String,
+    @SerializedName("TRAIN_ID")
     val trainId: String,
+    @SerializedName("WAITING_SECONDS")
     val waitingSeconds: String,
+    @SerializedName("WAITING_TIME")
     val waitingTime: String
 )
