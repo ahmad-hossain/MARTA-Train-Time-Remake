@@ -10,11 +10,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.godspeed010.martatraintime.feature_train.domain.model.Train
-import com.github.godspeed010.martatraintime.feature_train.ui.theme.*
+import com.github.godspeed010.martatraintime.feature_train.ui.theme.Amber600
+import com.github.godspeed010.martatraintime.feature_train.ui.theme.Blue500
+import com.github.godspeed010.martatraintime.feature_train.ui.theme.Green500
+import com.github.godspeed010.martatraintime.feature_train.ui.theme.Red600
+import kotlin.math.max
 
 @Composable
 fun TrainItem(
@@ -50,7 +55,16 @@ fun TrainItem(
                                 else -> Color.White
                             }
                         )
-                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                        .padding(6.dp)
+                        .layout { measurable, constraints ->
+                            val placeable = measurable.measure(constraints)
+
+                            val maxSize = max(placeable.height, placeable.width)
+
+                            layout(maxSize, maxSize) {
+                                placeable.placeRelative((maxSize - placeable.width) / 2, (maxSize - placeable.height) / 2)
+                            }
+                        }
                 ) {
                     Text(
                         text = train.DIRECTION,
