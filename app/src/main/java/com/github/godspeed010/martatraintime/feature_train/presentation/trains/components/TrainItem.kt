@@ -47,7 +47,7 @@ fun TrainItem(
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
                         .background(
-                            color = when (train.LINE) {
+                            color = when (train.line) {
                                 "GOLD" -> Amber600
                                 "RED" -> Red600
                                 "GREEN" -> Green500
@@ -67,23 +67,23 @@ fun TrainItem(
                         }
                 ) {
                     Text(
-                        text = train.DIRECTION,
+                        text = train.direction,
                         color = Color.Black
                     )
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 //station name
-                Text(text = train.STATION, fontWeight = FontWeight.Bold)
+                Text(text = train.station, fontWeight = FontWeight.Bold)
             }
 
             //if time in format '2 min' display on two lines,
             // else it is 'Arriving' so display on one line
-            if (train.WAITING_TIME.split(" ").size > 1) {
+            if (train.waitingTime.split(" ").size > 1) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    val (waitTime, timeUnit) = train.WAITING_TIME.split(" ")
+                    val (waitTime, timeUnit) = train.waitingTime.split(" ")
                     Text(
                         text = waitTime,
                         fontWeight = FontWeight.Bold,
@@ -93,7 +93,7 @@ fun TrainItem(
 
             } else {
                 Text(
-                    text = train.WAITING_TIME,
+                    text = train.waitingTime,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -106,15 +106,15 @@ fun TrainItem(
 fun TrainItemPreview() {
     TrainItem(
         train = Train(
-            DESTINATION = "Airport",
-            DIRECTION = "S",
-            EVENT_TIME = "2/11/2022 10:45:40 PM",
-            LINE = "GOLD",
-            NEXT_ARR = "10:46:02 PM",
-            STATION = "EDGEWOOD CANDLER PARK STATION TESTING ab",
-            TRAIN_ID = "301506",
-            WAITING_SECONDS = "18",
-            WAITING_TIME = "10 min"
+            destination = "Airport",
+            direction = "S",
+            eventTime = "2/11/2022 10:45:40 PM",
+            line = "GOLD",
+            nextArr = "10:46:02 PM",
+            station = "EDGEWOOD CANDLER PARK STATION TESTING ab",
+            trainId = "301506",
+            waitingSeconds = "18",
+            waitingTime = "10 min"
         )
     )
 

@@ -14,18 +14,18 @@ class OrderTrains {
         return when (trainOrder.orderType) {
             is OrderType.Ascending -> {
                 when (trainOrder) {
-                    is TrainOrder.Station -> trains.sortedBy { it.STATION.lowercase() }
-                    is TrainOrder.Line -> trains.sortedBy { it.LINE.lowercase() }
-                    is TrainOrder.Direction -> trains.sortedBy { it.DIRECTION.lowercase() }
-                    is TrainOrder.WaitTime -> trains.sortedBy { it.WAITING_TIME.appropriateSortingValue() }
+                    is TrainOrder.Station -> trains.sortedBy { it.station.lowercase() }
+                    is TrainOrder.Line -> trains.sortedBy { it.line.lowercase() }
+                    is TrainOrder.Direction -> trains.sortedBy { it.direction.lowercase() }
+                    is TrainOrder.WaitTime -> trains.sortedBy { it.waitingTime.appropriateSortingValue() }
                 }
             }
             is OrderType.Descending -> {
                 when (trainOrder) {
-                    is TrainOrder.Station -> trains.sortedByDescending { it.STATION.lowercase() }
-                    is TrainOrder.Line -> trains.sortedByDescending { it.LINE.lowercase() }
-                    is TrainOrder.Direction -> trains.sortedByDescending { it.DIRECTION.lowercase() }
-                    is TrainOrder.WaitTime -> trains.sortedByDescending { it.WAITING_TIME.appropriateSortingValue() }
+                    is TrainOrder.Station -> trains.sortedByDescending { it.station.lowercase() }
+                    is TrainOrder.Line -> trains.sortedByDescending { it.line.lowercase() }
+                    is TrainOrder.Direction -> trains.sortedByDescending { it.direction.lowercase() }
+                    is TrainOrder.WaitTime -> trains.sortedByDescending { it.waitingTime.appropriateSortingValue() }
                 }
             }
         }

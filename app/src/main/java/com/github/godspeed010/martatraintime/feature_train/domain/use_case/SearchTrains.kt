@@ -8,6 +8,6 @@ class SearchTrains {
         trains: List<Train>,
         searchQuery: String
     ) : List<Train> {
-        return trains.filter { train -> train.STATION.contains(searchQuery, ignoreCase = true) }
+        return trains.filter { train -> train.station.contains(searchQuery, ignoreCase = true) }
     }
 }

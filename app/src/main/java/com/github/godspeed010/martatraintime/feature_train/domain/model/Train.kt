@@ -13,13 +13,13 @@ package com.github.godspeed010.martatraintime.feature_train.domain.model
   "WAITING_TIME": "Arriving"
  */
 data class Train(
-    val DESTINATION: String,
-    val DIRECTION: String,
-    val EVENT_TIME: String,
-    val LINE: String,
-    val NEXT_ARR: String,
-    val STATION: String,
-    val TRAIN_ID: String,
-    val WAITING_SECONDS: String,
-    val WAITING_TIME: String
+    val destination: String,
+    val direction: String,
+    val eventTime: String,
+    val line: String,
+    val nextArr: String,
+    val station: String,
+    val trainId: String,
+    val waitingSeconds: String,
+    val waitingTime: String
 )
