@@ -69,14 +69,9 @@ class TrainViewModel @Inject constructor(
                 )
 
                 //set displayedTrainList back to trains when closing SearchSection
-                //and order trains using current orderState, as orderState may have changed while
-                //viewing filtered trains.
                 if (!state.isSearchSectionVisible) {
                     state = state.copy(
-                        displayedTrainList = trainsUseCases.orderTrains(
-                            state.trains,
-                            state.trainOrder
-                        )
+                        displayedTrainList = state.trains
                     )
                 }
             }
