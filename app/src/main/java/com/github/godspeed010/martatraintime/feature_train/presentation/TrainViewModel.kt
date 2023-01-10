@@ -1,6 +1,5 @@
 package com.github.godspeed010.martatraintime.feature_train.presentation
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -15,9 +14,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
-
-const val TAG = "TrainViewModel"
 
 @HiltViewModel
 class TrainViewModel @Inject constructor(
@@ -35,7 +33,7 @@ class TrainViewModel @Inject constructor(
     }
 
     fun onEvent(event: TrainsEvent) {
-        Log.d(TAG, "${event::class.simpleName} : $event")
+        Timber.d("${event::class.simpleName} : $event")
 
         when (event) {
             is TrainsEvent.Order -> {
