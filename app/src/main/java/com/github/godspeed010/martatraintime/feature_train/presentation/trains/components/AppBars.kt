@@ -128,12 +128,19 @@ fun DefaultAppBar(
                     DropdownMenuItem(
                         onClick = { onOrderChange(trainOrder.copy(oppositeOrderType)) }
                     ) {
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = stringResource(id = R.string.ascending)
+                        )
+                        Spacer(Modifier.width(8.dp))
                         Checkbox(
                             checked = trainOrder.orderType == OrderType.Ascending,
                             onCheckedChange = { onOrderChange(trainOrder.copy(oppositeOrderType)) },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = MaterialTheme.colors.primary,
+                                uncheckedColor = MaterialTheme.colors.onBackground,
+                            )
                         )
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(id = R.string.ascending))
                     }
                 }
             }
