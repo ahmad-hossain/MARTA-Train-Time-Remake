@@ -24,13 +24,13 @@ import com.github.godspeed010.martatraintime.feature_train.presentation.trains.c
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.TrainItem
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter") // We don't have a BottomBar, so innerPadding unneeded
-@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @ExperimentalAnimationApi
 @Composable
 fun TrainsScreen(
     viewModel: TrainViewModel = hiltViewModel()
 ) {
-    val state = viewModel.trainScreenState.value
+    val state = viewModel.state
     val scaffoldState = rememberScaffoldState()
     val pullRefreshState = rememberPullRefreshState(
         refreshing = state.isRefreshing,

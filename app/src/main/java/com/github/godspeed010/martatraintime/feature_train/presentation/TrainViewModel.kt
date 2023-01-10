@@ -1,7 +1,8 @@
 package com.github.godspeed010.martatraintime.feature_train.presentation
 
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.godspeed010.martatraintime.feature_train.domain.use_case.TrainsUseCases
@@ -22,8 +23,8 @@ class TrainViewModel @Inject constructor(
     private val trainsUseCases: TrainsUseCases,
 ) : ViewModel() {
 
-    private val _trainScreenState = mutableStateOf(TrainsState())
-    val trainScreenState: State<TrainsState> = _trainScreenState
+    var state by mutableStateOf(TrainsState())
+        private set
 
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage = _toastMessage.asSharedFlow()
@@ -38,62 +39,62 @@ class TrainViewModel @Inject constructor(
         when (event) {
             is TrainsEvent.Order -> {
                 //if order did not change
-                if (trainScreenState.value.trainOrder::class == event.trainOrder::class &&
-                    trainScreenState.value.trainOrder.orderType == event.trainOrder.orderType
+                if (state.trainOrder::class == event.trainOrder::class &&
+                    state.trainOrder.orderType == event.trainOrder.orderType
                 ) {
                     return
                 }
 
-                _trainScreenState.value = trainScreenState.value.copy(
+                state = state.copy(
                     displayedTrainList = trainsUseCases.orderTrains(
-                        trainScreenState.value.displayedTrainList,
+                        state.displayedTrainList,
                         event.trainOrder
                     ),
                     trainOrder = event.trainOrder
                 )
             }
             is TrainsEvent.FilterToggled -> {
-                _trainScreenState.value = trainScreenState.value.copy(
-                    isFilterDropdownExpanded = !trainScreenState.value.isFilterDropdownExpanded
+                state = state.copy(
+                    isFilterDropdownExpanded = !state.isFilterDropdownExpanded
                 )
             }
             is TrainsEvent.ToggleSearchSection -> {
                 //if search section is visible, then we are turning it off now
                 // if search section is not visible, we are turning it on
-                _trainScreenState.value = trainScreenState.value.copy(
+                state = state.copy(
                     searchQuery = "",
-                    isSearchSectionVisible = !trainScreenState.value.isSearchSectionVisible
+                    isSearchSectionVisible = !state.isSearchSectionVisible
                 )
 
                 //set displayedTrainList back to trains when closing SearchSection
                 //and order trains using current orderState, as orderState may have changed while
                 //viewing filtered trains.
-                if (!trainScreenState.value.isSearchSectionVisible) {
-                    _trainScreenState.value = trainScreenState.value.copy(
+                if (!state.isSearchSectionVisible) {
+                    state = state.copy(
                         displayedTrainList = trainsUseCases.orderTrains(
-                            trainScreenState.value.trains,
-                            trainScreenState.value.trainOrder
+                            state.trains,
+                            state.trainOrder
                         )
                     )
                 }
             }
             is TrainsEvent.Search -> {
-                _trainScreenState.value = trainScreenState.value.copy(
+                state = state.copy(
                     searchQuery = event.searchQuery,
                     displayedTrainList = trainsUseCases.searchTrains(
-                        trainScreenState.value.trains,
+                        state.trains,
                         event.searchQuery
                     )
                 )
             }
             TrainsEvent.RefreshData -> {
                 val currentTimeSecs = System.currentTimeMillis() / 1000
-                val timeSinceLastRefresh = currentTimeSecs - trainScreenState.value.lastRefreshTimeSecs
+                val timeSinceLastRefresh = currentTimeSecs - state.lastRefreshTimeSecs
                 if (timeSinceLastRefresh < REFRESH_COOLDOWN_SECS) {
                     viewModelScope.launch {
-                        _trainScreenState.value = trainScreenState.value.copy(isRefreshing = true)
+                        state = state.copy(isRefreshing = true)
                         delay(1500)
-                        _trainScreenState.value = trainScreenState.value.copy(isRefreshing = false)
+                        state = state.copy(isRefreshing = false)
                         _toastMessage.emit("Please wait ${REFRESH_COOLDOWN_SECS}s before refreshing again")
                     }
                     return
@@ -105,22 +106,22 @@ class TrainViewModel @Inject constructor(
     }
 
     private fun refreshData() {
-        _trainScreenState.value = trainScreenState.value.copy(isRefreshing = true)
+        state = state.copy(isRefreshing = true)
         viewModelScope.launch {
             val orderedTrains = trainsUseCases.orderTrains(
                 trains = trainsUseCases.getTrains(),
                 trainOrder = TrainOrder.Line(OrderType.Descending),
             )
-            val displayedTrainList = when (trainScreenState.value.isSearchSectionVisible) {
+            val displayedTrainList = when (state.isSearchSectionVisible) {
                 true -> {
                     trainsUseCases.searchTrains(
                         trains = orderedTrains,
-                        searchQuery = trainScreenState.value.searchQuery
+                        searchQuery = state.searchQuery
                     )
                 }
                 false -> orderedTrains
             }
-            _trainScreenState.value = trainScreenState.value.copy(
+            state = state.copy(
                 lastRefreshTimeSecs = System.currentTimeMillis() / 1000,
                 isRefreshing = false,
                 trains = orderedTrains,
