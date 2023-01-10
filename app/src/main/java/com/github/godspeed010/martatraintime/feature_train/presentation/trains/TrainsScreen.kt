@@ -1,6 +1,5 @@
 package com.github.godspeed010.martatraintime.feature_train.presentation.trains
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
@@ -23,7 +22,6 @@ import com.github.godspeed010.martatraintime.feature_train.presentation.TrainVie
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.MainAppBar
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.TrainItem
 
-private val TAG = "TrainsScreen"
 @OptIn(ExperimentalMaterialApi::class)
 @ExperimentalAnimationApi
 @Composable
@@ -50,20 +48,10 @@ fun TrainsScreen(
             MainAppBar(
                 isSearchSectionVisible = state.isSearchSectionVisible,
                 searchTextState = state.searchQuery,
-                onTextChange = {
-                    Log.i(TAG, "Search Query: $it")
-                    viewModel.onEvent(TrainsEvent.Search(it))
-                },
-                onCloseClicked = {
-                    Log.i(TAG, "Search CLOSED")
-                    viewModel.onEvent(TrainsEvent.ToggleSearchSection) },
-                onSearchTriggered = {
-                    Log.i(TAG, "Search OPENED")
-                    viewModel.onEvent(TrainsEvent.ToggleSearchSection) },
-                onFilterToggled = {
-                    Log.i(TAG, "Filter TOGGLED")
-                    viewModel.onEvent(TrainsEvent.FilterToggled)
-                },
+                onTextChange = { viewModel.onEvent(TrainsEvent.Search(it)) },
+                onCloseClicked = { viewModel.onEvent(TrainsEvent.ToggleSearchSection) },
+                onSearchTriggered = { viewModel.onEvent(TrainsEvent.ToggleSearchSection) },
+                onFilterToggled = { viewModel.onEvent(TrainsEvent.FilterToggled) },
                 isFilterDropdownExpanded = state.isFilterDropdownExpanded,
                 trainOrder = state.trainOrder,
                 onOrderChange = { viewModel.onEvent(TrainsEvent.Order(it)) }

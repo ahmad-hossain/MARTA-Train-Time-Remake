@@ -1,5 +1,6 @@
 package com.github.godspeed010.martatraintime.feature_train.presentation
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -34,6 +35,8 @@ class TrainViewModel @Inject constructor(
     }
 
     fun onEvent(event: TrainsEvent) {
+        Log.d(TAG, "${event::class.simpleName} : $event")
+
         when (event) {
             is TrainsEvent.Order -> {
                 //if order did not change
