@@ -10,5 +10,7 @@ data class TrainsState(
     val isFilterDropdownExpanded: Boolean = false,
     val isSearchSectionVisible: Boolean = false,
     val searchQuery: String = "",
-    val displayedTrainList: List<Train> = emptyList()
+    val displayedTrainList: List<Train> = emptyList(),
+    val isRefreshing: Boolean = false,
+    val lastRefreshTimeSecs: Long = 0L,
 )

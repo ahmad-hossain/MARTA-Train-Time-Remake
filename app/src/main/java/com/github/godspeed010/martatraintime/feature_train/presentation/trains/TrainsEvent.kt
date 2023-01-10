@@ -7,4 +7,5 @@ sealed class TrainsEvent {
     object FilterToggled : TrainsEvent()
     object ToggleSearchSection : TrainsEvent()
     data class Search(val searchQuery: String) : TrainsEvent()
+    object RefreshData : TrainsEvent()
 }

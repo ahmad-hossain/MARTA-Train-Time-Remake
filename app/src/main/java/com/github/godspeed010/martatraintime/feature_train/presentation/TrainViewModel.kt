@@ -10,6 +10,9 @@ import com.github.godspeed010.martatraintime.feature_train.domain.util.TrainOrde
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.TrainsEvent
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.TrainsState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,8 +26,11 @@ class TrainViewModel @Inject constructor(
     private val _trainScreenState = mutableStateOf(TrainsState())
     val trainScreenState: State<TrainsState> = _trainScreenState
 
+    private val _toastMessage = MutableSharedFlow<String>()
+    val toastMessage = _toastMessage.asSharedFlow()
+
     init {
-        getAllTrains()
+        refreshData()
     }
 
     fun onEvent(event: TrainsEvent) {
@@ -79,21 +85,50 @@ class TrainViewModel @Inject constructor(
                     )
                 )
             }
+            TrainsEvent.RefreshData -> {
+                val currentTimeSecs = System.currentTimeMillis() / 1000
+                val timeSinceLastRefresh = currentTimeSecs - trainScreenState.value.lastRefreshTimeSecs
+                if (timeSinceLastRefresh < REFRESH_COOLDOWN_SECS) {
+                    viewModelScope.launch {
+                        _trainScreenState.value = trainScreenState.value.copy(isRefreshing = true)
+                        delay(1500)
+                        _trainScreenState.value = trainScreenState.value.copy(isRefreshing = false)
+                        _toastMessage.emit("Please wait ${REFRESH_COOLDOWN_SECS}s before refreshing again")
+                    }
+                    return
+                }
+                refreshData()
+                viewModelScope.launch { _toastMessage.emit("Successfully refreshed data") }
+            }
         }
     }
 
-    private fun getAllTrains() {
+    private fun refreshData() {
+        _trainScreenState.value = trainScreenState.value.copy(isRefreshing = true)
         viewModelScope.launch {
-            _trainScreenState.value = trainScreenState.value.copy(
-                trains = trainsUseCases.orderTrains(
-                    trains = trainsUseCases.getTrains(),
-                    trainOrder = TrainOrder.Line(OrderType.Descending)
-                )
+            val orderedTrains = trainsUseCases.orderTrains(
+                trains = trainsUseCases.getTrains(),
+                trainOrder = TrainOrder.Line(OrderType.Descending),
             )
-            //set the displayed list to be the parsed Train list
+            val displayedTrainList = when (trainScreenState.value.isSearchSectionVisible) {
+                true -> {
+                    trainsUseCases.searchTrains(
+                        trains = orderedTrains,
+                        searchQuery = trainScreenState.value.searchQuery
+                    )
+                }
+                false -> orderedTrains
+            }
             _trainScreenState.value = trainScreenState.value.copy(
-                displayedTrainList = trainScreenState.value.trains
+                lastRefreshTimeSecs = System.currentTimeMillis() / 1000,
+                isRefreshing = false,
+                trains = orderedTrains,
+                displayedTrainList = displayedTrainList,
             )
         }
+    }
+
+    companion object {
+        const val REFRESH_COOLDOWN_SECS = 60
     }
 }
