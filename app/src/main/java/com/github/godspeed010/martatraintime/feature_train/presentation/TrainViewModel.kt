@@ -6,8 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.godspeed010.martatraintime.feature_train.domain.use_case.TrainsUseCases
-import com.github.godspeed010.martatraintime.feature_train.domain.util.OrderType
-import com.github.godspeed010.martatraintime.feature_train.domain.util.TrainOrder
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.TrainsEvent
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.TrainsState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,6 +46,10 @@ class TrainViewModel @Inject constructor(
                 state = state.copy(
                     displayedTrainList = trainsUseCases.orderTrains(
                         state.displayedTrainList,
+                        event.trainOrder
+                    ),
+                    trains = trainsUseCases.orderTrains(
+                        state.trains,
                         event.trainOrder
                     ),
                     trainOrder = event.trainOrder
@@ -110,7 +112,7 @@ class TrainViewModel @Inject constructor(
         viewModelScope.launch {
             val orderedTrains = trainsUseCases.orderTrains(
                 trains = trainsUseCases.getTrains(),
-                trainOrder = TrainOrder.Line(OrderType.Descending),
+                trainOrder = state.trainOrder
             )
             val displayedTrainList = when (state.isSearchSectionVisible) {
                 true -> {
