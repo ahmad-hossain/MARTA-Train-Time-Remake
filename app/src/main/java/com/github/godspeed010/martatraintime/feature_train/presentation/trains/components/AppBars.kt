@@ -1,13 +1,13 @@
 package com.github.godspeed010.martatraintime.feature_train.presentation.trains.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -21,7 +21,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.github.godspeed010.martatraintime.R;
+import com.github.godspeed010.martatraintime.R
+import com.github.godspeed010.martatraintime.feature_train.domain.model.FilterDropdownItem
+import com.github.godspeed010.martatraintime.feature_train.domain.util.OrderType
+import com.github.godspeed010.martatraintime.feature_train.domain.util.TrainOrder
 
 @Composable
 fun MainAppBar(
@@ -29,12 +32,20 @@ fun MainAppBar(
     searchTextState: String,
     onTextChange: (String) -> Unit,
     onCloseClicked: () -> Unit,
-    onSearchTriggered: () -> Unit
+    onSearchTriggered: () -> Unit,
+    onFilterToggled: () -> Unit,
+    isFilterDropdownExpanded: Boolean,
+    trainOrder: TrainOrder,
+    onOrderChange: (TrainOrder) -> Unit
 ) {
     when (isSearchSectionVisible) {
         false -> {
             DefaultAppBar(
-                onSearchClicked = onSearchTriggered
+                onSearchClicked = onSearchTriggered,
+                onFilterToggled = onFilterToggled,
+                isFilterDropdownExpanded = isFilterDropdownExpanded,
+                trainOrder = trainOrder,
+                onOrderChange = onOrderChange,
             )
         }
         true -> {
@@ -48,18 +59,83 @@ fun MainAppBar(
 }
 
 @Composable
-fun DefaultAppBar(onSearchClicked: () -> Unit) {
+fun DefaultAppBar(
+    onSearchClicked: () -> Unit,
+    onFilterToggled: () -> Unit,
+    isFilterDropdownExpanded: Boolean,
+    trainOrder: TrainOrder,
+    onOrderChange: (TrainOrder) -> Unit
+) {
+    val filterDropdownItems = listOf(
+        FilterDropdownItem(
+            textRes = R.string.direction,
+            isSelected = trainOrder is TrainOrder.Direction,
+            onSelect = { onOrderChange(TrainOrder.Direction(trainOrder.orderType)) }
+        ),
+        FilterDropdownItem(
+            textRes = R.string.line,
+            isSelected = trainOrder is TrainOrder.Line,
+            onSelect = { onOrderChange(TrainOrder.Line(trainOrder.orderType)) }
+        ),
+        FilterDropdownItem(
+            textRes = R.string.station,
+            isSelected = trainOrder is TrainOrder.Station,
+            onSelect = { onOrderChange(TrainOrder.Station(trainOrder.orderType)) }
+        ),
+        FilterDropdownItem(
+            textRes = R.string.wait_time,
+            isSelected = trainOrder is TrainOrder.WaitTime,
+            onSelect = { onOrderChange(TrainOrder.WaitTime(trainOrder.orderType)) }
+        ),
+    )
+
     TopAppBar(
         title = {
             Text(text = stringResource(R.string.app_name))
         },
         actions = {
-            IconButton(onClick = { onSearchClicked() }) {
+            IconButton(onClick = onSearchClicked) {
                 Icon(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "Search Icon",
                     tint = Color.White
                 )
+            }
+            Box {
+                IconButton(onClick = onFilterToggled) {
+                    Icon(
+                        imageVector = Icons.Default.Sort,
+                        contentDescription = "Filter Icon",
+                        tint = Color.White
+                    )
+                }
+                DropdownMenu(
+                    expanded = isFilterDropdownExpanded,
+                    onDismissRequest = onFilterToggled
+                ) {
+                    filterDropdownItems.forEach {
+                        DropdownMenuItem(onClick = it.onSelect) {
+                            DefaultRadioButton(
+                                text = stringResource(id = it.textRes),
+                                selected = it.isSelected,
+                                onSelect = it.onSelect
+                            )
+                        }
+                    }
+
+                    // TODO move logic to ViewModel. No need to send params in these events
+                    val oppositeOrderType = trainOrder.orderType.oppositeOrderType()
+                    DropdownMenuItem(
+                        onClick = { onOrderChange(trainOrder.copy(oppositeOrderType)) }
+                    ) {
+                        Checkbox(
+                            checked = trainOrder.orderType == OrderType.Ascending,
+                            onCheckedChange = { onOrderChange(trainOrder.copy(oppositeOrderType)) },
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(id = R.string.ascending))
+                    }
+                }
             }
         }
     )

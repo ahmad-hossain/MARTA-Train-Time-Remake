@@ -45,9 +45,9 @@ class TrainViewModel @Inject constructor(
                     trainOrder = event.trainOrder
                 )
             }
-            is TrainsEvent.ToggleOrderSection -> {
+            is TrainsEvent.FilterToggled -> {
                 _trainScreenState.value = trainScreenState.value.copy(
-                    isOrderSectionVisible = !trainScreenState.value.isOrderSectionVisible
+                    isFilterDropdownExpanded = !trainScreenState.value.isFilterDropdownExpanded
                 )
             }
             is TrainsEvent.ToggleSearchSection -> {

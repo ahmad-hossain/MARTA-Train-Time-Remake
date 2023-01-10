@@ -4,7 +4,7 @@ import com.github.godspeed010.martatraintime.feature_train.domain.util.TrainOrde
 
 sealed class TrainsEvent {
     data class Order(val trainOrder: TrainOrder) : TrainsEvent()
-    object ToggleOrderSection : TrainsEvent()
+    object FilterToggled : TrainsEvent()
     object ToggleSearchSection : TrainsEvent()
     data class Search(val searchQuery: String) : TrainsEvent()
 }

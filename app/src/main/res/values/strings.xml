@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">MARTA Train Time</string>
+    <string name="station">Station</string>
+    <string name="line">Line</string>
+    <string name="direction">Direction</string>
+    <string name="wait_time">Wait Time</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">Descending</string>
+    <string-array name="filter_options">
+        <item>@string/station</item>
+        <item>@string/line</item>
+        <item>@string/direction</item>
+        <item>@string/wait_time</item>
+    </string-array>
+    <string-array name="sort_options">
+        <item>@string/ascending</item>
+        <item>@string/descending</item>
+    </string-array>
 </resources>
