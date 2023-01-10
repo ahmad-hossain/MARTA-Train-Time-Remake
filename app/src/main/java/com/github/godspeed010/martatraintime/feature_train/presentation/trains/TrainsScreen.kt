@@ -1,5 +1,6 @@
 package com.github.godspeed010.martatraintime.feature_train.presentation.trains
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
@@ -22,7 +23,8 @@ import com.github.godspeed010.martatraintime.feature_train.presentation.TrainVie
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.MainAppBar
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.TrainItem
 
-@OptIn(ExperimentalMaterialApi::class)
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter") // We don't have a BottomBar, so innerPadding unneeded
+@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 @ExperimentalAnimationApi
 @Composable
 fun TrainsScreen(
@@ -57,14 +59,14 @@ fun TrainsScreen(
                 onOrderChange = { viewModel.onEvent(TrainsEvent.Order(it)) }
             )
         }
-    ) { innerPadding ->
+    ) {
         Box(Modifier.pullRefresh(pullRefreshState)) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
+                    .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
-                contentPadding = PaddingValues(vertical = 6.dp)
+                contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 items(state.displayedTrainList) { train ->
                     TrainItem(train)
