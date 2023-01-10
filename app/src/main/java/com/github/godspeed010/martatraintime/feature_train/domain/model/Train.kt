@@ -1,5 +1,6 @@
 package com.github.godspeed010.martatraintime.feature_train.domain.model
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
 /*
@@ -14,6 +15,7 @@ import com.google.gson.annotations.SerializedName
   "WAITING_SECONDS": "18",
   "WAITING_TIME": "Arriving"
  */
+@Keep
 data class Train(
     @SerializedName("DESTINATION")
     val destination: String,
