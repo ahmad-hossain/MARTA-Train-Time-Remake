@@ -31,13 +31,13 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideTrainRepository(api: TrainApi) : TrainRepository {
+    fun provideTrainRepository(api: TrainApi): TrainRepository {
         return TrainRepositoryImpl(api)
     }
 
     @Singleton
     @Provides
-    fun provideTrainApi() : TrainApi {
+    fun provideTrainApi(): TrainApi {
         return Retrofit.Builder()
             .baseUrl(TrainApi.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())

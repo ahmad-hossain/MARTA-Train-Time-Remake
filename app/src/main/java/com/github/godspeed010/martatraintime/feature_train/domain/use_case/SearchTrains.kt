@@ -7,7 +7,7 @@ class SearchTrains {
     operator fun invoke(
         trains: List<Train>,
         searchQuery: String
-    ) : List<Train> {
+    ): List<Train> {
         return trains.filter { train -> train.station.contains(searchQuery, ignoreCase = true) }
     }
 }

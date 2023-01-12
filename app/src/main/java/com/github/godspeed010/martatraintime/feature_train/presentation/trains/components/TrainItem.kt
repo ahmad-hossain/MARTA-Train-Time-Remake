@@ -62,7 +62,10 @@ fun TrainItem(
                             val maxSize = max(placeable.height, placeable.width)
 
                             layout(maxSize, maxSize) {
-                                placeable.placeRelative((maxSize - placeable.width) / 2, (maxSize - placeable.height) / 2)
+                                placeable.placeRelative(
+                                    (maxSize - placeable.width) / 2,
+                                    (maxSize - placeable.height) / 2
+                                )
                             }
                         }
                 ) {
