@@ -61,19 +61,16 @@ class TrainViewModel @Inject constructor(
                 )
             }
             is TrainsEvent.ToggleSearchSection -> {
-                //if search section is visible, then we are turning it off now
-                // if search section is not visible, we are turning it on
                 state = state.copy(
                     searchQuery = "",
                     isSearchSectionVisible = !state.isSearchSectionVisible
                 )
 
+                if (state.isSearchSectionVisible) return
                 //set displayedTrainList back to trains when closing SearchSection
-                if (!state.isSearchSectionVisible) {
-                    state = state.copy(
-                        displayedTrainList = state.trains
-                    )
-                }
+                state = state.copy(
+                    displayedTrainList = state.trains
+                )
             }
             is TrainsEvent.Search -> {
                 state = state.copy(
@@ -85,12 +82,12 @@ class TrainViewModel @Inject constructor(
                 )
             }
             TrainsEvent.RefreshData -> {
-                val currentTimeSecs = System.currentTimeMillis() / 1000
+                val currentTimeSecs = System.currentTimeMillis() / 1_000
                 val timeSinceLastRefresh = currentTimeSecs - state.lastRefreshTimeSecs
                 if (timeSinceLastRefresh < REFRESH_COOLDOWN_SECS) {
                     viewModelScope.launch {
                         state = state.copy(isRefreshing = true)
-                        delay(1500)
+                        delay(1_500)
                         state = state.copy(isRefreshing = false)
                         _toastMessage.emit("Please wait ${REFRESH_COOLDOWN_SECS}s before refreshing again")
                     }
@@ -119,7 +116,7 @@ class TrainViewModel @Inject constructor(
                 false -> orderedTrains
             }
             state = state.copy(
-                lastRefreshTimeSecs = System.currentTimeMillis() / 1000,
+                lastRefreshTimeSecs = System.currentTimeMillis() / 1_000,
                 isRefreshing = false,
                 trains = orderedTrains,
                 displayedTrainList = displayedTrainList,
