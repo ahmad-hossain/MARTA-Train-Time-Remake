@@ -1,17 +1,16 @@
 package com.github.godspeed010.martatraintime.feature_train.presentation.trains
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Scaffold
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -23,15 +22,13 @@ import com.github.godspeed010.martatraintime.feature_train.presentation.TrainVie
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.MainAppBar
 import com.github.godspeed010.martatraintime.feature_train.presentation.trains.components.TrainItem
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter") // We don't have a BottomBar, so innerPadding unneeded
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @ExperimentalAnimationApi
 @Composable
 fun TrainsScreen(
     viewModel: TrainViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
-    val scaffoldState = rememberScaffoldState()
     val pullRefreshState = rememberPullRefreshState(
         refreshing = state.isRefreshing,
         onRefresh = { viewModel.onEvent(TrainsEvent.RefreshData) }
@@ -45,7 +42,6 @@ fun TrainsScreen(
     }
 
     Scaffold(
-        scaffoldState = scaffoldState,
         topBar = {
             MainAppBar(
                 isSearchSectionVisible = state.isSearchSectionVisible,
@@ -59,8 +55,12 @@ fun TrainsScreen(
                 onOrderChange = { viewModel.onEvent(TrainsEvent.Order(it)) }
             )
         }
-    ) {
-        Box(Modifier.pullRefresh(pullRefreshState)) {
+    ) { innerPadding ->
+        Box(
+            Modifier
+                .padding(innerPadding)
+                .pullRefresh(pullRefreshState)
+        ) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
