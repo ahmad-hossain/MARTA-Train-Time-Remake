@@ -28,7 +28,17 @@ class TrainViewModel @Inject constructor(
     val toastMessage = _toastMessage.asSharedFlow()
 
     init {
-        refreshData()
+        viewModelScope.launch {
+            val orderedTrains = trainsUseCases.orderTrains(
+                trains = trainsUseCases.getTrains(),
+                trainOrder = state.trainOrder
+            )
+            state = state.copy(
+                trains = orderedTrains,
+                displayedTrainList = orderedTrains,
+                lastRefreshTimeSecs = System.currentTimeMillis() / 1_000
+            )
+        }
     }
 
     fun onEvent(event: TrainsEvent) {
