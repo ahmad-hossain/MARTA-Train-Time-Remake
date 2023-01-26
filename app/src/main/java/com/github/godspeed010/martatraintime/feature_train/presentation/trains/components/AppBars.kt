@@ -3,28 +3,32 @@ package com.github.godspeed010.martatraintime.feature_train.presentation.trains.
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.godspeed010.martatraintime.R
 import com.github.godspeed010.martatraintime.feature_train.domain.model.FilterDropdownItem
 import com.github.godspeed010.martatraintime.feature_train.domain.util.OrderType
 import com.github.godspeed010.martatraintime.feature_train.domain.util.TrainOrder
+
+private val TopAppBarHeight = 64.dp
 
 @Composable
 fun MainAppBar(
@@ -58,6 +62,7 @@ fun MainAppBar(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefaultAppBar(
     onSearchClicked: () -> Unit,
@@ -90,15 +95,12 @@ fun DefaultAppBar(
     )
 
     TopAppBar(
-        title = {
-            Text(text = stringResource(R.string.app_name))
-        },
+        title = { Text(text = stringResource(R.string.app_name)) },
         actions = {
             IconButton(onClick = onSearchClicked) {
                 Icon(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "Search Icon",
-                    tint = Color.White
                 )
             }
             Box {
@@ -106,7 +108,6 @@ fun DefaultAppBar(
                     Icon(
                         imageVector = Icons.Default.Sort,
                         contentDescription = "Filter Icon",
-                        tint = Color.White
                     )
                 }
                 DropdownMenu(
@@ -114,41 +115,45 @@ fun DefaultAppBar(
                     onDismissRequest = onFilterToggled
                 ) {
                     filterDropdownItems.forEach {
-                        DropdownMenuItem(onClick = it.onSelect) {
-                            DefaultRadioButton(
-                                text = stringResource(id = it.textRes),
-                                selected = it.isSelected,
-                                onSelect = it.onSelect
-                            )
-                        }
+                        DropdownMenuItem(
+                            onClick = it.onSelect,
+                            text = {
+                                DefaultRadioButton(
+                                    text = stringResource(id = it.textRes),
+                                    selected = it.isSelected,
+                                    onSelect = it.onSelect
+                                )
+                            }
+                        )
                     }
 
                     // TODO move logic to ViewModel. No need to send params in these events
                     val oppositeOrderType = trainOrder.orderType.oppositeOrderType()
                     DropdownMenuItem(
-                        onClick = { onOrderChange(trainOrder.copy(oppositeOrderType)) }
-                    ) {
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = stringResource(id = R.string.ascending)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Checkbox(
-                            checked = trainOrder.orderType == OrderType.Ascending,
-                            onCheckedChange = { onOrderChange(trainOrder.copy(oppositeOrderType)) },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = MaterialTheme.colors.primary,
-                                uncheckedColor = MaterialTheme.colors.onBackground,
-                            )
-                        )
-                    }
+                        onClick = { onOrderChange(trainOrder.copy(oppositeOrderType)) },
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    text = stringResource(id = R.string.ascending)
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Checkbox(
+                                    checked = trainOrder.orderType == OrderType.Ascending,
+                                    onCheckedChange = {
+                                        onOrderChange(trainOrder.copy(oppositeOrderType))
+                                    },
+                                )
+                            }
+                        }
+                    )
                 }
             }
         }
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchAppBar(
     text: String,
@@ -164,9 +169,7 @@ fun SearchAppBar(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp),
-        elevation = AppBarDefaults.TopAppBarElevation,
-        color = MaterialTheme.colors.primarySurface
+            .height(TopAppBarHeight),
     ) {
         TextField(
             modifier = Modifier
@@ -181,18 +184,16 @@ fun SearchAppBar(
                     modifier = Modifier
                         .alpha(ContentAlpha.medium),
                     text = "Search here...",
-                    color = Color.White
                 )
             },
             textStyle = TextStyle(
-                fontSize = MaterialTheme.typography.subtitle1.fontSize
+                fontSize = MaterialTheme.typography.titleMedium.fontSize
             ),
             singleLine = true,
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search Icon",
-                    tint = Color.White
                 )
             },
             trailingIcon = {
@@ -208,7 +209,6 @@ fun SearchAppBar(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Close Icon",
-                        tint = Color.White
                     )
                 }
             },
@@ -218,9 +218,28 @@ fun SearchAppBar(
             keyboardActions = KeyboardActions(
                 onSearch = { keyboardController?.hide() }
             ),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.Transparent,
-                cursorColor = Color.White.copy(alpha = ContentAlpha.medium)
-            ))
+        )
     }
+}
+
+@Preview
+@Composable
+fun PreviewDefaultAppBar() {
+    DefaultAppBar(
+        onSearchClicked = {},
+        onFilterToggled = {},
+        isFilterDropdownExpanded = false,
+        trainOrder = TrainOrder.Direction(OrderType.Ascending),
+        onOrderChange = {}
+    )
+}
+
+@Preview
+@Composable
+fun PreviewSearchAppBar() {
+    SearchAppBar(
+        text = "",
+        onTextChange = {},
+        onCloseClicked = {}
+    )
 }
