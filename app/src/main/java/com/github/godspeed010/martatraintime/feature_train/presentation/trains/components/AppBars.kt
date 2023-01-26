@@ -166,60 +166,55 @@ fun SearchAppBar(
     }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Surface(
+    TextField(
         modifier = Modifier
+            .height(TopAppBarHeight)
             .fillMaxWidth()
-            .height(TopAppBarHeight),
-    ) {
-        TextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester),
-            value = text,
-            onValueChange = {
-                onTextChange(it)
-            },
-            placeholder = {
-                Text(
-                    modifier = Modifier
-                        .alpha(ContentAlpha.medium),
-                    text = "Search here...",
-                )
-            },
-            textStyle = TextStyle(
-                fontSize = MaterialTheme.typography.titleMedium.fontSize
-            ),
-            singleLine = true,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search Icon",
-                )
-            },
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        if (text.isNotEmpty()) {
-                            onTextChange("")
-                        } else {
-                            onCloseClicked()
-                        }
+            .focusRequester(focusRequester),
+        value = text,
+        onValueChange = {
+            onTextChange(it)
+        },
+        placeholder = {
+            Text(
+                modifier = Modifier
+                    .alpha(ContentAlpha.medium),
+                text = "Search here...",
+            )
+        },
+        textStyle = TextStyle(
+            fontSize = MaterialTheme.typography.titleMedium.fontSize
+        ),
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search Icon",
+            )
+        },
+        trailingIcon = {
+            IconButton(
+                onClick = {
+                    if (text.isNotEmpty()) {
+                        onTextChange("")
+                    } else {
+                        onCloseClicked()
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close Icon",
-                    )
                 }
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions(
-                onSearch = { keyboardController?.hide() }
-            ),
-        )
-    }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close Icon",
+                )
+            }
+        },
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Search
+        ),
+        keyboardActions = KeyboardActions(
+            onSearch = { keyboardController?.hide() }
+        ),
+    )
 }
 
 @Preview

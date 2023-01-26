@@ -43,7 +43,9 @@ fun TrainItem(
                         }, shape = CircleShape
                     )
                     .squareLayout()
-                    .padding(8.dp), text = train.direction, color = Color.Black
+                    .padding(8.dp),
+                text = train.direction,
+                color = Color.Black
             )
         },
         headlineText = { Text(train.station) },
@@ -70,7 +72,6 @@ fun TrainItem(
                         fontSize = bodyLargeFontSize,
                     )
                 }
-
             } else {
                 Text(
                     text = train.waitingTime,
