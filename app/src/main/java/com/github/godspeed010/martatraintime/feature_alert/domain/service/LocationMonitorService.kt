@@ -2,7 +2,6 @@ package com.github.godspeed010.martatraintime.feature_alert.domain.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -33,32 +32,13 @@ class LocationMonitorService : Service() {
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
 
-    @Inject
-    lateinit var locationMonitor: LocationMonitor
+    @Inject lateinit var locationMonitor: LocationMonitor
 
     private val mutableNotificationStateFlow = MutableStateFlow(NotificationState())
     private val notificationState: StateFlow<NotificationState>
         get() = mutableNotificationStateFlow.asStateFlow()
 
-    private val stopServiceIntent by lazy {
-        Intent(this, LocationMonitorService::class.java).apply { action = ACTION_STOP_SERVICE }
-    }
-    private val stopServicePIntent by lazy {
-        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        } else {
-            PendingIntent.FLAG_UPDATE_CURRENT
-        }
-
-        PendingIntent.getService(this, 0, stopServiceIntent, flags)
-    }
-
-    private val notificationBuilder by lazy {
-        NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID).setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(getString(R.string.service_notification_title))
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .addAction(R.mipmap.ic_launcher, getString(R.string.stop), stopServicePIntent)
-    }
+    @Inject lateinit var notificationBuilder: NotificationCompat.Builder
 
     private lateinit var destination: Location
 
@@ -149,12 +129,12 @@ class LocationMonitorService : Service() {
 
     companion object {
         private const val TAG = "LocationMonitor"
-        private const val NOTIFICATION_CHANNEL_ID = "LocationMonitorChannel"
+        const val NOTIFICATION_CHANNEL_ID = "LocationMonitorChannel"
         private const val NOTIFICATION_CHANNEL_NAME = "Stop Arrival Status"
         private const val NOTIFICATION_CHANNEL_DESCRIPTION = "Stop Arrival Alert"
         private const val NOTIFICATION_ID = 1
         const val ACTION_START_SERVICE = "ACTION_START_SERVICE"
-        private const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
+        const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
         const val EXTRA_DESTINATION_LOCATION = "EXTRA_DESTINATION_LOCATION"
     }
 }

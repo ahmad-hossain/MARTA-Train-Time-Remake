@@ -43,6 +43,10 @@ fun AlertScreen(
                 }
             })
 
+
+    // TODO 1. ACCESS_BACKGROUND_LOCATION must be requested separately from other permissions
+    // 2. user must be shown a Dialog explaining why the permission is needed https://radar.com/blog/guide-to-play-store-background-location-approval
+    // 3. must get approval in play console
     LaunchedEffect(Unit) {
         permissionsState.launchMultiplePermissionRequest()
     }
