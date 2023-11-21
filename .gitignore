@@ -65,3 +65,4 @@ local.properties
 .buildpath
 
 app/.DS_STORE
+**/.DS_Store
