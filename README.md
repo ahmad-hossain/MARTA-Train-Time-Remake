@@ -5,4 +5,5 @@ Android App that tells the waiting time for the user's desired train. Recreated 
 [Play Store](https://play.google.com/store/apps/details?id=com.github.godspeed010.martatraintime)
 
 # Video Walkthrough
-![gif](https://thumbs.gfycat.com/FittingUntriedArawana-size_restricted.gif)
+<img src="https://github.com/ahmad-hossain/MARTA-Train-Time-Remake/blob/main/walkthrough.gif" width=300><br>
+
